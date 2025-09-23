@@ -1,0 +1,1 @@
+Light-weight JSON parser library for embedded systems, written in C, based on `jsmn` (for more info check [jsmn readme](/jsmn_base.md)). Two additional functions included that allows to find values much easier. 
