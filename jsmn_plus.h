@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 Grzegorz P. Świstak
+ * Copyright (c) 2026 Grzegorz P. Świstak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,56 +22,23 @@
  * SOFTWARE.
  */
 
+#ifndef __LIGHT_JSON_H
+#define __LIGHT_JSON_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stdint.h>
+#define JSMN_HEADER
 #include "jsmn_base.h"
-#include "string.h"
 
-int jsmn_isTokenString(const unsigned char *json, const jsmntok_t *tok, const char *name)
-{
-	size_t tokenLength = tok->end - tok->start;
-    if (tok->type == JSMN_STRING &&
-        (int)strlen(name) == tokenLength &&
-        strncmp((const char *)(json + tok->start), name, tokenLength) == 0)
-    {
-        return 0; // match
-    }
-    return -1; // no match
+int jsmn_isString(const char *json, const jsmntok_t *tok, const char *name);
+uint16_t jsmn_getNextKey(const jsmntok_t * startingToken, uint16_t currentKeyOffset);
+jsmntok_t * jsmn_getValueFromObject(const char *json, jsmntok_t *token, const char *key);
+
+#ifdef __cplusplus
 }
+#endif
 
-jsmntok_t * jsmn_getValueFromObject(const unsigned char *json, const jsmntok_t *token, const char *name)
-{
-	if(token->type != JSMN_OBJECT || token->size == 0)
-	{
-		return NULL;
-	}
-
-	const jsmntok_t *current = token + 1;
-	int i = 0;
-	for(;;)
-	{
-		// validate name
-		if(jsmn_isTokenString(json, current, name) == 0)
-		{
-			if(current->size == 1)
-			{
-				return (jsmntok_t *)current + 1;
-			}
-			else
-			{
-				return NULL;
-			}
-		}
-		i++;
-		if(i >= token->size)
-		{
-			break;
-		}
-
-		// jump to next token
-		for(int j = 1; j > 0; --j)
-		{
-			j += current->size;
-			current += 1;
-		}
-	}
-	return NULL;
-}
+#endif /* __LIGHT_JSON_H */
